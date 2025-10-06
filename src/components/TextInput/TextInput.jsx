@@ -5,7 +5,7 @@ function TextInput({ label, value, onChange, placeholder, inputMode, onBlur, err
     <label className={styles.wrap}>
       <div className={styles.label}>{label}</div>
       <input
-        className={error ? styles.inputError : styles.input}
+        className={`${styles.input} ${error ? styles.inputError : ''}`}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}

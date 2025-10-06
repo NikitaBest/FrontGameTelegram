@@ -1,0 +1,26 @@
+.tabs {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.tab, .tabActive {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 14px 12px;
+  border-radius: 14px;
+  border: 2px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.06);
+  color: inherit;
+}
+
+.tabActive {
+  border-color: #ffcc33;
+  box-shadow: 0 0 0 2px rgba(255,204,51,0.25) inset;
+}
+
+.icon { opacity: 0.9; }
+.radio { opacity: 0.9; }
+

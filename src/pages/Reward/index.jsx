@@ -134,8 +134,8 @@ function RewardPage() {
         <div className={styles.sectionTitle}>Выберите способ перевода</div>
         <RadioTabs
           options={[
-            { value: 'card', label: 'По номеру карты', icon: '💳' },
-            { value: 'sbp', label: 'СБП по номеру телефона', icon: '📱' },
+            { value: 'card', label: 'Карта', icon: '💳' },
+            { value: 'sbp', label: 'СБП', icon: '📱' },
           ]}
           value={method}
           onChange={setMethod}

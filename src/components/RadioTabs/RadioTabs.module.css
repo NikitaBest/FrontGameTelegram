@@ -1,26 +1,37 @@
 .tabs {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
+  display: flex;
+  background: rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 4px;
+  gap: 4px;
 }
 
 .tab, .tabActive {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   gap: 8px;
-  padding: 14px 12px;
-  border-radius: 14px;
-  border: 2px solid rgba(255,255,255,0.12);
-  background: rgba(255,255,255,0.06);
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
   color: inherit;
+  flex: 1;
+  transition: all 0.2s ease;
+  cursor: pointer;
 }
 
 .tabActive {
-  border-color: #ffcc33;
-  box-shadow: 0 0 0 2px rgba(255,204,51,0.25) inset;
+  background: rgba(255,255,255,0.15);
+  color: #ffcc33;
+  font-weight: 600;
 }
 
-.icon { opacity: 0.9; }
-.radio { opacity: 0.9; }
+.icon { 
+  opacity: 0.9; 
+  font-size: 16px;
+}
+.radio { 
+  display: none; /* Скрываем радио-кнопки для вкладок */
+}
 

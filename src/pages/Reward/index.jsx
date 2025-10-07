@@ -131,7 +131,7 @@ function RewardPage() {
       </div>
 
       <Panel>
-        <div className={styles.sectionTitle}>Куда хотите получить выиграш</div>
+        <div className={styles.sectionTitle}>Куда хотите получить выигрыш?</div>
         <RadioTabs
           options={[
             { value: 'card', label: 'Карта', icon: '💳' },

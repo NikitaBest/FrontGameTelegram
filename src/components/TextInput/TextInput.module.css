@@ -1,5 +1,4 @@
-.wrap { display: flex; flex-direction: column; gap: 8px; margin: 12px 0; }
-.label { opacity: 0.9; }
+/* Используем общие стили из index.css */
 .input {
   width: 100%;
   padding: 14px 12px;
@@ -15,7 +14,6 @@
 .input:focus {
   border-color: rgba(255,255,255,0.4);
   background: rgba(0,0,0,0.35);
-  box-shadow: 0 0 0 2px rgba(255,255,255,0.1);
 }
 .input::placeholder { color: rgba(255,255,255,0.5); }
 .inputError { 

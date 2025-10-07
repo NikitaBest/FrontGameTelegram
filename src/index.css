@@ -1,9 +1,30 @@
-* { box-sizing: border-box; }
-html, body, #root { height: 100%; }
+* { 
+  box-sizing: border-box; 
+  color: #ffffff;
+}
+
+html, body, #root { 
+  height: 100%; 
+  color: #ffffff;
+}
+
 body { 
   margin: 0; 
   font-family: -apple-system, system-ui, Segoe UI, Roboto, Arial, sans-serif;
   min-height: 100svh;
   background: linear-gradient(180deg, #78AEF2 0%, #7FB3F4 40%, #6A90D6 100%);
   background-attachment: fixed;
+  color: #ffffff !important;
+}
+
+/* Общие стили для форм */
+.form-wrap { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 8px; 
+  margin: 12px 0; 
+}
+
+.form-label { 
+  opacity: 0.9; 
 }

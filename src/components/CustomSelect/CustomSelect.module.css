@@ -1,13 +1,4 @@
-.wrap { 
-  display: flex; 
-  flex-direction: column; 
-  gap: 8px; 
-  margin: 12px 0; 
-}
-
-.label { 
-  opacity: 0.9; 
-}
+/* Используем общие стили из index.css */
 
 .container { 
   position: relative; 

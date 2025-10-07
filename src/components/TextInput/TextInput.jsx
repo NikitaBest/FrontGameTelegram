@@ -2,8 +2,8 @@ import styles from './TextInput.module.css'
 
 function TextInput({ label, value, onChange, placeholder, inputMode, onBlur, error, helperText }) {
   return (
-    <label className={styles.wrap}>
-      <div className={styles.label}>{label}</div>
+    <label className="form-wrap">
+      <div className="form-label">{label}</div>
       <input
         className={`${styles.input} ${error ? styles.inputError : ''}`}
         value={value}

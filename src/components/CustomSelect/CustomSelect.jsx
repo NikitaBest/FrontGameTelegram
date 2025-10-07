@@ -18,8 +18,8 @@ function CustomSelect({ label, value, onChange, options, showIcons = false }) {
   const selectedOption = options.find(opt => opt.value === value) || options[0]
 
   return (
-    <label className={styles.wrap}>
-      <div className={styles.label}>{label}</div>
+    <label className="form-wrap">
+      <div className="form-label">{label}</div>
       <div className={styles.container} ref={selectRef}>
         <button
           className={styles.trigger}

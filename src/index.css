@@ -12,8 +12,7 @@ body {
   margin: 0; 
   font-family: -apple-system, system-ui, Segoe UI, Roboto, Arial, sans-serif;
   min-height: 100svh;
-  background: linear-gradient(180deg, #78AEF2 0%, #7FB3F4 40%, #6A90D6 100%);
-  background-attachment: fixed;
+  background: url('/treasure-background.png') center/cover no-repeat fixed;
   color: #ffffff !important;
 }
 

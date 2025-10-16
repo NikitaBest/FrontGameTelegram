@@ -325,6 +325,7 @@ function RewardPage() {
               options={banks.length > 0 ? banks : bankOptions}
               showIcons={true}
               onOpen={loadBanks}
+              searchable={true}
             />
           </>
         )}

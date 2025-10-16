@@ -89,3 +89,35 @@
 .optionText {
   flex: 1;
 }
+
+.searchContainer {
+  padding: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.16);
+}
+
+.searchInput {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.1);
+  color: inherit;
+  font-size: 14px;
+}
+
+.searchInput::placeholder {
+  color: rgba(255,255,255,0.6);
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: rgba(255,255,255,0.4);
+  background: rgba(255,255,255,0.15);
+}
+
+.noResults {
+  padding: 12px;
+  text-align: center;
+  color: rgba(255,255,255,0.6);
+  font-size: 14px;
+}

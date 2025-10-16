@@ -1,6 +1,6 @@
 // Конфигурация API
 export const API_CONFIG = {
-  BASE_URL: 'https://telegram-games.tg-projects.ru',
+  BASE_URL: import.meta.env.VITE_API_BASE_URL || 'https://telegram-games.tg-projects.ru',
   
   ENDPOINTS: {
     GET_PAYMENT: '/payment/{paymentIdentifier}',

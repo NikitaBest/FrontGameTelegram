@@ -4,7 +4,7 @@ export const API_CONFIG = {
   
   ENDPOINTS: {
     GET_PAYMENT: '/payment/{paymentIdentifier}',
-    // Здесь можно добавить другие эндпоинты в будущем
+    GET_BANKS: '/payment/banks',
   }
 }
 
@@ -34,6 +34,24 @@ export const fetchPaymentData = async (paymentIdentifier) => {
     return await response.json()
   } catch (error) {
     console.error('Ошибка запроса данных платежа:', error)
+    throw error
+  }
+}
+
+// Функция для получения списка банков
+export const fetchBanks = async () => {
+  const url = getApiUrl(API_CONFIG.ENDPOINTS.GET_BANKS)
+  
+  try {
+    const response = await fetch(url)
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    
+    return await response.json()
+  } catch (error) {
+    console.error('Ошибка запроса списка банков:', error)
     throw error
   }
 }

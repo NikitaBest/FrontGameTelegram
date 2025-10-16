@@ -1,20 +1,14 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import styles from './Reward.module.css'
 import Panel from '../../components/Panel/Panel.jsx'
 import RadioTabs from '../../components/RadioTabs/RadioTabs.jsx'
 import TextInput from '../../components/TextInput/TextInput.jsx'
 import CustomSelect from '../../components/CustomSelect/CustomSelect.jsx'
 import PrimaryButton from '../../components/PrimaryButton/PrimaryButton.jsx'
-import banksData from '../../../banks.json'
-import { fetchPaymentData } from '../../config/api.js'
+import { fetchPaymentData, fetchBanks } from '../../config/api.js'
 
 const bankOptions = [
   { value: '', label: 'Выберите банк' },
-  ...banksData.collection.map((b) => ({
-    value: b.external_id,
-    label: b.russian_name || b.name,
-    iconUrl: b.icon_url,
-  })),
 ]
 
 function RewardPage() {
@@ -27,6 +21,47 @@ function RewardPage() {
   const [loading, setLoading] = useState(true)
   const [paymentData, setPaymentData] = useState(null)
   const [error, setError] = useState(false)
+  const [banks, setBanks] = useState([])
+  const [banksLoading, setBanksLoading] = useState(false)
+
+  const loadBanks = useCallback(async () => {
+    try {
+      setBanksLoading(true)
+      const data = await fetchBanks()
+      console.log('Список банков с бекенда:', data)
+      
+      // Проверяем структуру данных
+      let banksArray = []
+      if (data && Array.isArray(data)) {
+        banksArray = data
+      } else if (data && data.value && Array.isArray(data.value.banks)) {
+        banksArray = data.value.banks
+      } else if (data && data.banks && Array.isArray(data.banks)) {
+        banksArray = data.banks
+      }
+      
+      console.log('Обработанный массив банков:', banksArray)
+      
+      // Преобразуем данные в формат для селекта
+      const bankOptions = [
+        { value: '', label: 'Выберите банк' },
+        ...banksArray.map((bank) => ({
+          value: bank.id || bank.external_id,
+          label: bank.russian_name || bank.name,
+          iconUrl: bank.icon_url,
+        })),
+      ]
+      
+      console.log('Финальные опции банков:', bankOptions)
+      setBanks(bankOptions)
+    } catch (error) {
+      console.error('Ошибка загрузки списка банков:', error)
+      // В случае ошибки используем пустой список
+      setBanks([{ value: '', label: 'Выберите банк' }])
+    } finally {
+      setBanksLoading(false)
+    }
+  }, [])
 
   const onlyDigits = (s) => s.replace(/\D/g, '')
   const formatCard = (s) => onlyDigits(s).slice(0,16).replace(/(\d{4})(?=\d)/g, '$1 ').trim()
@@ -143,6 +178,7 @@ function RewardPage() {
         console.log('Данные с бекенда:', data)
         console.log('Поле money:', data?.value?.backPayment?.money)
         console.log('Поле type:', data?.value?.backPayment?.type)
+        console.log('Поле status:', data?.value?.backPayment?.status)
         console.log('isSuccess:', data?.isSuccess)
         
         // Проверяем успешность запроса и тип платежа
@@ -160,6 +196,7 @@ function RewardPage() {
       }
     }
 
+
     loadPaymentData()
   }, [])
 
@@ -170,6 +207,26 @@ function RewardPage() {
         <div className={styles.hero}>
           <div className={styles.heroTitle}>Ошибка</div>
           <div className={styles.subtitle}>Попробуйте снова</div>
+        </div>
+      </div>
+    )
+  }
+
+  // Показываем только статус для статусов 2 и 3
+  if (paymentData?.value?.backPayment?.status === 2 || paymentData?.value?.backPayment?.status === 3) {
+    return (
+      <div className={styles.statusPage}>
+        <div className={styles.statusHero}>
+          <img className={styles.pouchImg} src="/1 7.svg" alt="prize" />
+          
+          <div className={styles.status}>
+            {paymentData.value.backPayment.status === 2 && (
+              <div className={styles.statusProcessing}>Платеж в обработке!</div>
+            )}
+            {paymentData.value.backPayment.status === 3 && (
+              <div className={styles.statusSuccess}>Платеж произведен успешно!</div>
+            )}
+          </div>
         </div>
       </div>
     )
@@ -225,11 +282,12 @@ function RewardPage() {
               helperText={phoneError}
             />
             <CustomSelect
-              label="Выберите банк"
+              label={banksLoading ? "Загрузка банков..." : "Выберите банк"}
               value={bank}
               onChange={setBank}
-              options={bankOptions}
+              options={banks.length > 0 ? banks : bankOptions}
               showIcons={true}
+              onOpen={loadBanks}
             />
           </>
         )}

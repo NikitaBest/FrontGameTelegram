@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import styles from './CustomSelect.module.css'
 
-function CustomSelect({ label, value, onChange, options, showIcons = false }) {
+function CustomSelect({ label, value, onChange, options, showIcons = false, onOpen }) {
   const [isOpen, setIsOpen] = useState(false)
   const selectRef = useRef(null)
 
@@ -23,7 +23,12 @@ function CustomSelect({ label, value, onChange, options, showIcons = false }) {
       <div className={styles.container} ref={selectRef}>
         <button
           className={styles.trigger}
-          onClick={() => setIsOpen(!isOpen)}
+          onClick={() => {
+            if (!isOpen && onOpen) {
+              onOpen()
+            }
+            setIsOpen(!isOpen)
+          }}
           type="button"
         >
           <span 

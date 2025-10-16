@@ -5,7 +5,7 @@ import RadioTabs from '../../components/RadioTabs/RadioTabs.jsx'
 import TextInput from '../../components/TextInput/TextInput.jsx'
 import CustomSelect from '../../components/CustomSelect/CustomSelect.jsx'
 import PrimaryButton from '../../components/PrimaryButton/PrimaryButton.jsx'
-import { fetchPaymentData, fetchBanks } from '../../config/api.js'
+import { fetchPaymentData, fetchBanks, sendPayment } from '../../config/api.js'
 
 const bankOptions = [
   { value: '', label: 'Выберите банк' },
@@ -23,6 +23,47 @@ function RewardPage() {
   const [error, setError] = useState(false)
   const [banks, setBanks] = useState([])
   const [banksLoading, setBanksLoading] = useState(false)
+  const [paymentIdentifier, setPaymentIdentifier] = useState('')
+  const [sendingPayment, setSendingPayment] = useState(false)
+
+  const loadPaymentData = useCallback(async () => {
+    try {
+      setLoading(true)
+      
+      // Получаем paymentId из URL параметров
+      const urlParams = new URLSearchParams(window.location.search)
+      let paymentIdentifier = urlParams.get('paymentId')
+      
+      // Для локальной разработки используем тестовый paymentId, если не найден в URL
+      if (!paymentIdentifier) {
+        paymentIdentifier = 'a2c903ce-4fcd-4d3c-b621-0b68d844c887'
+        console.log('Используется тестовый paymentId для локальной разработки:', paymentIdentifier)
+      }
+      
+      // Сохраняем paymentIdentifier для отправки платежа
+      setPaymentIdentifier(paymentIdentifier)
+        
+      const data = await fetchPaymentData(paymentIdentifier)
+      console.log('Данные с бекенда:', data)
+      console.log('Поле money:', data?.value?.backPayment?.money)
+      console.log('Поле type:', data?.value?.backPayment?.type)
+      console.log('Поле status:', data?.value?.backPayment?.status)
+      console.log('isSuccess:', data?.isSuccess)
+      
+      // Проверяем успешность запроса и тип платежа
+      if (!data?.isSuccess || data?.value?.backPayment?.type !== 1) {
+        console.log('Показываем ошибку. isSuccess:', data?.isSuccess, 'type:', data?.value?.backPayment?.type)
+        setError(true)
+      } else {
+        console.log('Показываем основную страницу')
+        setPaymentData(data)
+      }
+    } catch (error) {
+      console.error('Ошибка загрузки данных платежа:', error)
+    } finally {
+      setLoading(false)
+    }
+  }, [])
 
   const loadBanks = useCallback(async () => {
     try {
@@ -62,6 +103,36 @@ function RewardPage() {
       setBanksLoading(false)
     }
   }, [])
+
+  const handleSendPayment = useCallback(async () => {
+    try {
+      setSendingPayment(true)
+      
+      // Подготавливаем данные для отправки
+      const paymentData = {
+        paymentIdentifier: paymentIdentifier,
+        fpsBankMemberId: method === 'sbp' ? bank : '',
+        fpsMobilePhone: method === 'sbp' ? phone : '',
+        cardNumber: method === 'card' ? card : '',
+      }
+      
+      console.log('Отправляем данные платежа:', paymentData)
+      
+      const response = await sendPayment(paymentData)
+      console.log('Ответ от бекенда:', response)
+      
+      // Обновляем данные после успешной отправки
+      await loadPaymentData()
+      
+      alert('Платеж успешно отправлен!')
+      
+    } catch (error) {
+      console.error('Ошибка отправки платежа:', error)
+      alert('Ошибка при отправке платежа. Попробуйте снова.')
+    } finally {
+      setSendingPayment(false)
+    }
+  }, [paymentIdentifier, method, bank, phone, card])
 
   const onlyDigits = (s) => s.replace(/\D/g, '')
   const formatCard = (s) => onlyDigits(s).slice(0,16).replace(/(\d{4})(?=\d)/g, '$1 ').trim()
@@ -162,43 +233,8 @@ function RewardPage() {
 
   // Запрос данных платежа при загрузке
   useEffect(() => {
-    const loadPaymentData = async () => {
-      try {
-        // Получаем paymentId из URL параметров
-        const urlParams = new URLSearchParams(window.location.search)
-        let paymentIdentifier = urlParams.get('paymentId')
-        
-        // Для локальной разработки используем тестовый paymentId, если не найден в URL
-        if (!paymentIdentifier) {
-          paymentIdentifier = 'a2c903ce-4fcd-4d3c-b621-0b68d844c887'
-          console.log('Используется тестовый paymentId для локальной разработки:', paymentIdentifier)
-        }
-        
-        const data = await fetchPaymentData(paymentIdentifier)
-        console.log('Данные с бекенда:', data)
-        console.log('Поле money:', data?.value?.backPayment?.money)
-        console.log('Поле type:', data?.value?.backPayment?.type)
-        console.log('Поле status:', data?.value?.backPayment?.status)
-        console.log('isSuccess:', data?.isSuccess)
-        
-        // Проверяем успешность запроса и тип платежа
-        if (!data?.isSuccess || data?.value?.backPayment?.type !== 1) {
-          console.log('Показываем ошибку. isSuccess:', data?.isSuccess, 'type:', data?.value?.backPayment?.type)
-          setError(true)
-        } else {
-          console.log('Показываем основную страницу')
-          setPaymentData(data)
-        }
-      } catch (error) {
-        console.error('Ошибка загрузки данных платежа:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-
     loadPaymentData()
-  }, [])
+  }, [loadPaymentData])
 
   // Показываем страницу ошибки, если type !== 1
   if (error) {
@@ -293,7 +329,11 @@ function RewardPage() {
         )}
 
         <div className={styles.ctaWrap}>
-          <PrimaryButton text="Получить выигрыш" onClick={() => {}} />
+          <PrimaryButton 
+            text={sendingPayment ? "Отправляем..." : "Получить выигрыш"} 
+            onClick={handleSendPayment}
+            disabled={sendingPayment}
+          />
         </div>
       </Panel>
     </div>

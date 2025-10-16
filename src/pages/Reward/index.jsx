@@ -171,14 +171,15 @@ function RewardPage() {
     const digits = onlyDigits(s)
     if (digits.length === 0) return ''
     
-    // Если начинается с 8, оставляем как есть для ввода
+    // Если начинается с 8, заменяем на 7 и форматируем как +7
     if (digits[0] === '8') {
-      const d = digits.slice(0, 11)
-      if (d.length <= 1) return '8'
-      if (d.length <= 4) return `8 (${d.slice(1)}`
-      if (d.length <= 7) return `8 (${d.slice(1, 4)}) ${d.slice(4)}`
-      if (d.length <= 9) return `8 (${d.slice(1, 4)}) ${d.slice(4, 7)}-${d.slice(7)}`
-      return `8 (${d.slice(1, 4)}) ${d.slice(4, 7)}-${d.slice(7, 9)}-${d.slice(9)}`
+      const processedDigits = '7' + digits.slice(1)
+      const d = processedDigits.slice(0, 11)
+      if (d.length <= 1) return '+7'
+      if (d.length <= 4) return `+7 (${d.slice(1)}`
+      if (d.length <= 7) return `+7 (${d.slice(1, 4)}) ${d.slice(4)}`
+      if (d.length <= 9) return `+7 (${d.slice(1, 4)}) ${d.slice(4, 7)}-${d.slice(7)}`
+      return `+7 (${d.slice(1, 4)}) ${d.slice(4, 7)}-${d.slice(7, 9)}-${d.slice(9)}`
     }
     
     // Если начинается с 7
@@ -191,9 +192,9 @@ function RewardPage() {
       return `+7 (${d.slice(1, 4)}) ${d.slice(4, 7)}-${d.slice(7, 9)}-${d.slice(9)}`
     }
     
-    // Если не начинается с 7 или 8, добавляем 7 в начало
-    digits.unshift('7')
-    const d = digits.slice(0, 11)
+    // Если не начинается с 7 или 8, заменяем первую цифру на 7
+    const processedDigits = '7' + digits.slice(1)
+    const d = processedDigits.slice(0, 11)
     if (d.length <= 1) return '+7'
     if (d.length <= 4) return `+7 (${d.slice(1)}`
     if (d.length <= 7) return `+7 (${d.slice(1, 4)}) ${d.slice(4)}`

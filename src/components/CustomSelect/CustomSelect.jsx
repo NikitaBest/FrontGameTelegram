@@ -14,9 +14,22 @@ function CustomSelect({ label, value, onChange, options, showIcons = false, onOp
         setSearchTerm('')
       }
     }
+    
+    function handleEscape(event) {
+      if (event.key === 'Escape' && isOpen) {
+        setIsOpen(false)
+        setSearchTerm('')
+      }
+    }
+    
     document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
+    document.addEventListener('keydown', handleEscape)
+    
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('keydown', handleEscape)
+    }
+  }, [isOpen])
 
   // Фокус на поле поиска при открытии
   useEffect(() => {
@@ -77,8 +90,11 @@ function CustomSelect({ label, value, onChange, options, showIcons = false, onOp
                 <button
                   key={option.value}
                   className={styles.option}
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
                     onChange(option.value)
+                    // Всегда закрываем список после выбора
                     setIsOpen(false)
                     setSearchTerm('')
                   }}

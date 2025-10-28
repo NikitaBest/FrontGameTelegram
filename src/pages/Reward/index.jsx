@@ -87,7 +87,7 @@ function RewardPage() {
       const bankOptions = [
         { value: '', label: 'Выберите банк' },
         ...banksArray.map((bank) => ({
-          value: bank.id || bank.external_id,
+          value: bank.external_id || bank.id,
           label: bank.russian_name || bank.name,
           iconUrl: bank.icon_url,
         })),
@@ -111,9 +111,12 @@ function RewardPage() {
       // Подготавливаем данные для отправки
       const paymentData = {
         paymentIdentifier: paymentIdentifier,
-        fpsBankMemberId: method === 'sbp' ? bank : '',
-        fpsMobilePhone: method === 'sbp' ? phone : '',
-        cardNumber: method === 'card' ? card : '',
+        bank_details: method === 'sbp' ? {
+          fps_mobile_phone: `+${onlyDigits(phone)}`,
+          fps_bank_member_id: bank
+        } : method === 'card' ? {
+          card_number: onlyDigits(card)
+        } : {},
       }
       
       console.log('Отправляем данные платежа:', paymentData)

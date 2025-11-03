@@ -111,12 +111,9 @@ function RewardPage() {
       // Подготавливаем данные для отправки
       const paymentData = {
         paymentIdentifier: paymentIdentifier,
-        bank_details: method === 'sbp' ? {
-          fps_mobile_phone: `+${onlyDigits(phone)}`,
-          fps_bank_member_id: bank
-        } : method === 'card' ? {
-          card_number: onlyDigits(card)
-        } : {},
+        fpsBankMemberId: method === 'sbp' ? bank : '',
+        fpsMobilePhone: method === 'sbp' ? `+${onlyDigits(phone)}` : '',
+        cardNumber: method === 'card' ? onlyDigits(card) : '',
       }
       
       console.log('Отправляем данные платежа:', paymentData)
